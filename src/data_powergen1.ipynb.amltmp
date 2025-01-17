@@ -22,10 +22,10 @@
         "import pandas as pd"
       ],
       "outputs": [],
-      "execution_count": 1,
+      "execution_count": 2,
       "metadata": {
         "gather": {
-          "logged": 1737134334116
+          "logged": 1737137497313
         }
       }
     },
@@ -70,7 +70,7 @@
       "execution_count": 2,
       "metadata": {
         "gather": {
-          "logged": 1737134334401
+          "logged": 1737135091230
         }
       }
     },
@@ -107,7 +107,7 @@
       "execution_count": 3,
       "metadata": {
         "gather": {
-          "logged": 1737134334592
+          "logged": 1737135091459
         }
       }
     },
@@ -145,10 +145,10 @@
         "    return conn"
       ],
       "outputs": [],
-      "execution_count": 4,
+      "execution_count": 3,
       "metadata": {
         "gather": {
-          "logged": 1737134334911
+          "logged": 1737137510411
         }
       }
     },
@@ -217,7 +217,7 @@
       "execution_count": 5,
       "metadata": {
         "gather": {
-          "logged": 1737134335224
+          "logged": 1737135091830
         }
       }
     },
@@ -253,10 +253,10 @@
         "        print(f\"Error loading data: {err}\")"
       ],
       "outputs": [],
-      "execution_count": 6,
+      "execution_count": 4,
       "metadata": {
         "gather": {
-          "logged": 1737134335516
+          "logged": 1737137535484
         }
       }
     },
@@ -278,6 +278,7 @@
       "source": [
         "# Ejecución del script\n",
         "if __name__ == \"__main__\":\n",
+        "   \n",
         "    # Crear base de datos\n",
         "    create_database()\n",
         "\n",
@@ -294,31 +295,17 @@
         "\n",
         "    db_conn.close()"
       ],
-      "outputs": [],
-      "execution_count": null,
-      "metadata": {
-        "gather": {
-          "logged": 1737134339444
-        }
-      }
-    },
-    {
-      "cell_type": "code",
-      "source": [
-        "import os\n",
-        "print(\"Directorio actual:\", os.getcwd())\n"
-      ],
       "outputs": [
         {
           "output_type": "stream",
           "name": "stdout",
-          "text": "Directorio actual: /mnt/batch/tasks/shared/LS_root/mounts/clusters/aurelio-parra/code/Users/aurelio.sosa.netmind/powergen-predictivo/src\n"
+          "text": "Connected to 'data_powergen' successfully.\nData loaded successfully into registros_condiciones.\n"
         }
       ],
-      "execution_count": 8,
+      "execution_count": 6,
       "metadata": {
         "gather": {
-          "logged": 1737134851726
+          "logged": 1737138877499
         }
       }
     }
