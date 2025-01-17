@@ -25,7 +25,7 @@
       "execution_count": 1,
       "metadata": {
         "gather": {
-          "logged": 1737146954549
+          "logged": 1737147516510
         }
       }
     },
@@ -76,7 +76,7 @@
           }
         },
         "gather": {
-          "logged": 1737146954681
+          "logged": 1737147516629
         }
       }
     },
@@ -126,7 +126,7 @@
           }
         },
         "gather": {
-          "logged": 1737146954839
+          "logged": 1737147516764
         }
       }
     },
@@ -146,7 +146,6 @@
     {
       "cell_type": "code",
       "source": [
-        "# Lista de consultas a ejecutar\n",
         "sql_queries = {\n",
         "    \"create_resultados_join\": \"\"\"\n",
         "        CREATE TABLE IF NOT EXISTS resultados_join AS\n",
@@ -199,8 +198,16 @@
         "        WHERE vibracion_mm_s > 3.0 AND temperatura_c > 60;\n",
         "    \"\"\",\n",
         "    \"tiempo_promedio_mantenimiento\": \"\"\"\n",
-        "        SELECT id_equipo, AVG(EXTRACT(EPOCH FROM AGE(fecha, LAG(fecha) OVER (PARTITION BY id_equipo ORDER BY fecha)))/3600) AS tiempo_promedio_horas\n",
-        "        FROM historicos_ordenes\n",
+        "        WITH diferencias AS (\n",
+        "            SELECT \n",
+        "                id_equipo,\n",
+        "                EXTRACT(EPOCH FROM AGE(fecha, LAG(fecha) OVER (PARTITION BY id_equipo ORDER BY fecha))) / 3600 AS tiempo_entre_mantenimientos\n",
+        "            FROM historicos_ordenes\n",
+        "        )\n",
+        "        SELECT \n",
+        "            id_equipo, \n",
+        "            AVG(tiempo_entre_mantenimientos) AS tiempo_promedio_horas\n",
+        "        FROM diferencias\n",
         "        GROUP BY id_equipo;\n",
         "    \"\"\",\n",
         "    \"suma_horas_acumuladas\": \"\"\"\n",
@@ -209,21 +216,10 @@
         "        GROUP BY id_equipo;\n",
         "    \"\"\"\n",
         "}\n",
-        "\n",
-        "\n",
-        "sql_queries\n"
+        "\n"
       ],
-      "outputs": [
-        {
-          "output_type": "execute_result",
-          "execution_count": 4,
-          "data": {
-            "text/plain": "{'create_resultados_join': '\\n        CREATE TABLE IF NOT EXISTS resultados_join AS\\n        SELECT \\n            h.id_equipo,\\n            COUNT(h.id_orden) AS total_ordenes_mantenimiento,\\n            AVG(r.temperatura_c) AS promedio_temperatura,\\n            AVG(r.vibracion_mm_s) AS promedio_vibracion,\\n            AVG(r.presion_bar) AS promedio_presion\\n        FROM historicos_ordenes h\\n        LEFT JOIN registros_condiciones r\\n        ON h.id_equipo = r.id_equipo\\n        GROUP BY h.id_equipo;\\n    ',\n 'total_ordenes_por_equipo': '\\n        SELECT id_equipo, COUNT(id_orden) AS total_ordenes\\n        FROM historicos_ordenes\\n        GROUP BY id_equipo;\\n    ',\n 'duracion_promedio_vida_util': '\\n        SELECT AVG(vida_util_anios) AS duracion_promedio_vida_util\\n        FROM caracteristicas_equipos;\\n    ',\n 'costo_promedio_correctivo': \"\\n        SELECT AVG(costo_mantenimiento) AS costo_promedio_correctivo\\n        FROM historicos_ordenes\\n        WHERE tipo_mantenimiento = 'Correctivo';\\n    \",\n 'equipo_mas_fallas': \"\\n        SELECT id_equipo, COUNT(id_orden) AS total_correctivo\\n        FROM historicos_ordenes\\n        WHERE tipo_mantenimiento = 'Correctivo'\\n        GROUP BY id_equipo\\n        ORDER BY total_correctivo DESC\\n        LIMIT 1;\\n    \",\n 'temperatura_resumen': '\\n        SELECT id_equipo, AVG(temperatura_c) AS promedio_temp, MAX(temperatura_c) AS max_temp\\n        FROM registros_condiciones\\n        GROUP BY id_equipo;\\n    ',\n 'ordenes_correctivas_equipo': \"\\n        SELECT id_orden, id_equipo, costo_mantenimiento, tiempo_reparacion_horas\\n        FROM historicos_ordenes\\n        WHERE tipo_mantenimiento = 'Correctivo' AND id_equipo = %s;\\n    \",\n 'dias_vibracion_temperatura': '\\n        SELECT *\\n        FROM registros_condiciones\\n        WHERE vibracion_mm_s > 3.0 AND temperatura_c > 60;\\n    ',\n 'tiempo_promedio_mantenimiento': '\\n        SELECT id_equipo, AVG(EXTRACT(EPOCH FROM AGE(fecha, LAG(fecha) OVER (PARTITION BY id_equipo ORDER BY fecha)))/3600) AS tiempo_promedio_horas\\n        FROM historicos_ordenes\\n        GROUP BY id_equipo;\\n    ',\n 'suma_horas_acumuladas': '\\n        SELECT id_equipo, SUM(horas_acumuladas) AS total_horas_acumuladas\\n        FROM registros_condiciones\\n        GROUP BY id_equipo;\\n    '}"
-          },
-          "metadata": {}
-        }
-      ],
-      "execution_count": 4,
+      "outputs": [],
+      "execution_count": null,
       "metadata": {
         "jupyter": {
           "source_hidden": false,
@@ -235,7 +231,7 @@
           }
         },
         "gather": {
-          "logged": 1737146955180
+          "logged": 1737147516891
         }
       }
     },
@@ -264,20 +260,21 @@
         "    for query_name, query in sql_queries.items():\n",
         "        print(f\"Executing query: {query_name}\")\n",
         "        result = execute_query(db_conn, query)\n",
+        "\n",
+        "        equipo_id = 'E005'\n",
+        "        result = execute_query(db_conn, sql_queries[\"ordenes_correctivas_equipo\"], (equipo_id,))\n",
+        "        print(result)\n",
+        "\n",
+        "\n",
+        "\n",
         "        if result:  # Si la consulta devuelve resultados, imprimirlos\n",
         "            print(result)\n",
         "\n",
         "    # Cerrar la conexión\n",
         "    db_conn.close()\n"
       ],
-      "outputs": [
-        {
-          "output_type": "stream",
-          "name": "stdout",
-          "text": "Connected to 'data_powergen' successfully.\nExecuting query: create_resultados_join\nQuery executed successfully\nExecuting query: total_ordenes_por_equipo\nQuery executed successfully\n[('E005', 502), ('E013', 496), ('E011', 483), ('E019', 516), ('E001', 487), ('E003', 506), ('E020', 516), ('E015', 495), ('E016', 478), ('E006', 473), ('E010', 537), ('E008', 531), ('E014', 464), ('E007', 485), ('E004', 539), ('E017', 532), ('E018', 498), ('E009', 507), ('E012', 470), ('E002', 485)]\nExecuting query: duracion_promedio_vida_util\nQuery executed successfully\n[(Decimal('19.0000000000000000'),)]\nExecuting query: costo_promedio_correctivo\nQuery executed successfully\n[(Decimal('2711.4088353413654618'),)]\nExecuting query: equipo_mas_fallas\nQuery executed successfully\n[('E010', 272)]\nExecuting query: temperatura_resumen\nQuery executed successfully\n[('E005', Decimal('50.4801952277657267'), Decimal('80.0')), ('E013', Decimal('51.2583956043956044'), Decimal('80.0')), ('E011', Decimal('49.4766952789699571'), Decimal('79.99')), ('E019', Decimal('49.9776872246696035'), Decimal('79.94')), ('E001', Decimal('49.8715505617977528'), Decimal('79.92')), ('E003', Decimal('51.3045628997867804'), Decimal('79.99')), ('E020', Decimal('49.8497505668934240'), Decimal('78.92')), ('E016', Decimal('50.5321145374449339'), Decimal('79.91')), ('E015', Decimal('50.8351619870410367'), Decimal('79.97')), ('E006', Decimal('49.6764120370370370'), Decimal('80.0')), ('E010', Decimal('49.4946860986547085'), Decimal('79.89')), ('E008', Decimal('50.4663655913978495'), Decimal('79.92')), ('E014', Decimal('49.7002795698924731'), Decimal('79.84')), ('E007', Decimal('50.6467458432304038'), Decimal('79.92')), ('E004', Decimal('48.8249372384937238'), Decimal('79.96')), ('E018', Decimal('49.9259414225941423'), Decimal('79.96')), ('E017', Decimal('51.2141491841491841'), Decimal('79.71')), ('E002', Decimal('48.0370257611241218'), Decimal('79.97')), ('E012', Decimal('50.8509813084112150'), Decimal('79.9')), ('E009', Decimal('50.5166666666666667'), Decimal('79.98'))]\nExecuting query: ordenes_correctivas_equipo\nError executing query: syntax error at or near \"%\"\nLINE 4: ... WHERE tipo_mantenimiento = 'Correctivo' AND id_equipo = %s;\n                                                                    ^\n\nExecuting query: dias_vibracion_temperatura\nError executing query: current transaction is aborted, commands ignored until end of transaction block\n\nExecuting query: tiempo_promedio_mantenimiento\nError executing query: current transaction is aborted, commands ignored until end of transaction block\n\nExecuting query: suma_horas_acumuladas\nError executing query: current transaction is aborted, commands ignored until end of transaction block\n\n"
-        }
-      ],
-      "execution_count": 5,
+      "outputs": [],
+      "execution_count": null,
       "metadata": {
         "jupyter": {
           "source_hidden": false,
@@ -289,7 +286,7 @@
           }
         },
         "gather": {
-          "logged": 1737146960664
+          "logged": 1737147522518
         }
       }
     }
@@ -314,6 +311,13 @@
     },
     "kernel_info": {
       "name": "python38-azureml"
+    },
+    "microsoft": {
+      "host": {
+        "AzureML": {
+          "notebookHasBeenCompleted": true
+        }
+      }
     },
     "nteract": {
       "version": "nteract-front-end@1.0.0"
