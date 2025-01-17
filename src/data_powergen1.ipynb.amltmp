@@ -17,12 +17,17 @@
       "cell_type": "code",
       "source": [
         "import psycopg2\n",
+        "from psycopg2 import Error # Importar la clase Error\n",
         "from psycopg2 import sql\n",
         "import pandas as pd"
       ],
       "outputs": [],
-      "execution_count": null,
-      "metadata": {}
+      "execution_count": 1,
+      "metadata": {
+        "gather": {
+          "logged": 1737118528439
+        }
+      }
     },
     {
       "cell_type": "markdown",
@@ -53,13 +58,21 @@
         "            port=5432\n",
         "        )\n",
         "        print(\"Database connection successful\")\n",
-        "    except psycopg2.Error as err:\n",
-        "        print(f\"Error: '{err}'\")\n",
+        "    except psycopg2.OperationalError as err:\n",
+        "        print(\"Failed to connect to the database. Please check the following:\")\n",
+        "        print(\"- Are the username and password correct?\")\n",
+        "        print(\"- Is the host address accurate?\")\n",
+        "        print(\"- Is the database accessible with these credentials?\")\n",
+        "        print(\"- Additional Error Details:\", err)\n",
         "    return conn"
       ],
       "outputs": [],
-      "execution_count": null,
-      "metadata": {}
+      "execution_count": 2,
+      "metadata": {
+        "gather": {
+          "logged": 1737118528916
+        }
+      }
     },
     {
       "cell_type": "markdown",
@@ -91,8 +104,12 @@
         "        conn.close()"
       ],
       "outputs": [],
-      "execution_count": null,
-      "metadata": {}
+      "execution_count": 3,
+      "metadata": {
+        "gather": {
+          "logged": 1737118529333
+        }
+      }
     },
     {
       "cell_type": "markdown",
@@ -128,8 +145,12 @@
         "    return conn"
       ],
       "outputs": [],
-      "execution_count": null,
-      "metadata": {}
+      "execution_count": 4,
+      "metadata": {
+        "gather": {
+          "logged": 1737118529812
+        }
+      }
     },
     {
       "cell_type": "markdown",
@@ -193,8 +214,12 @@
         "        print(f\"Error creating tables: {err}\")"
       ],
       "outputs": [],
-      "execution_count": null,
-      "metadata": {}
+      "execution_count": 5,
+      "metadata": {
+        "gather": {
+          "logged": 1737118530288
+        }
+      }
     },
     {
       "cell_type": "markdown",
@@ -228,8 +253,12 @@
         "        print(f\"Error loading data: {err}\")"
       ],
       "outputs": [],
-      "execution_count": null,
-      "metadata": {}
+      "execution_count": 6,
+      "metadata": {
+        "gather": {
+          "logged": 1737118530692
+        }
+      }
     },
     {
       "cell_type": "markdown",
@@ -265,36 +294,66 @@
         "\n",
         "    db_conn.close()"
       ],
-      "outputs": [],
-      "execution_count": null,
-      "metadata": {}
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": "Failed to connect to the database. Please check the following:\n- Are the username and password correct?\n- Is the host address accurate?\n- Is the database accessible with these credentials?\n- Additional Error Details: connection to server at \"ep-solitary-ponda2p3evpo.eu-central-1.aws.neon.tech\" (3.126.212.11), port 5432 failed: ERROR:  password authentication failed for user 'datafundamental_owner'\n\n"
+        },
+        {
+          "output_type": "error",
+          "ename": "AttributeError",
+          "evalue": "'NoneType' object has no attribute 'autocommit'",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mAttributeError\u001b[0m                            Traceback (most recent call last)",
+            "Cell \u001b[0;32mIn[7], line 4\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[38;5;66;03m# Ejecución del script\u001b[39;00m\n\u001b[1;32m      2\u001b[0m \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;18m__name__\u001b[39m \u001b[38;5;241m==\u001b[39m \u001b[38;5;124m\"\u001b[39m\u001b[38;5;124m__main__\u001b[39m\u001b[38;5;124m\"\u001b[39m:\n\u001b[1;32m      3\u001b[0m     \u001b[38;5;66;03m# Crear base de datos\u001b[39;00m\n\u001b[0;32m----> 4\u001b[0m     \u001b[43mcreate_database\u001b[49m\u001b[43m(\u001b[49m\u001b[43m)\u001b[49m\n\u001b[1;32m      6\u001b[0m     \u001b[38;5;66;03m# Conectar a la base de datos 'data_powergen'\u001b[39;00m\n\u001b[1;32m      7\u001b[0m     db_conn \u001b[38;5;241m=\u001b[39m create_database_connection()\n",
+            "Cell \u001b[0;32mIn[3], line 4\u001b[0m, in \u001b[0;36mcreate_database\u001b[0;34m()\u001b[0m\n\u001b[1;32m      2\u001b[0m \u001b[38;5;28;01mdef\u001b[39;00m \u001b[38;5;21mcreate_database\u001b[39m():\n\u001b[1;32m      3\u001b[0m     conn \u001b[38;5;241m=\u001b[39m create_server_connection()\n\u001b[0;32m----> 4\u001b[0m     \u001b[43mconn\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mautocommit\u001b[49m \u001b[38;5;241m=\u001b[39m \u001b[38;5;28;01mTrue\u001b[39;00m  \u001b[38;5;66;03m# Permitir comandos independientes\u001b[39;00m\n\u001b[1;32m      5\u001b[0m     \u001b[38;5;28;01mtry\u001b[39;00m:\n\u001b[1;32m      6\u001b[0m         \u001b[38;5;28;01mwith\u001b[39;00m conn\u001b[38;5;241m.\u001b[39mcursor() \u001b[38;5;28;01mas\u001b[39;00m cursor:\n",
+            "\u001b[0;31mAttributeError\u001b[0m: 'NoneType' object has no attribute 'autocommit'"
+          ]
+        }
+      ],
+      "execution_count": 7,
+      "metadata": {
+        "gather": {
+          "logged": 1737118531974
+        }
+      }
     }
   ],
   "metadata": {
     "kernelspec": {
-      "display_name": "Python 3.10 - SDK v2",
+      "name": "python38-azureml",
       "language": "python",
-      "name": "python310-sdkv2"
+      "display_name": "Python 3.8 - AzureML"
     },
     "language_info": {
+      "name": "python",
+      "version": "3.10.11",
+      "mimetype": "text/x-python",
       "codemirror_mode": {
         "name": "ipython",
         "version": 3
       },
-      "file_extension": ".py",
-      "mimetype": "text/x-python",
-      "name": "python",
-      "nbconvert_exporter": "python",
       "pygments_lexer": "ipython3",
-      "version": "3.10.6"
+      "nbconvert_exporter": "python",
+      "file_extension": ".py"
     },
     "microsoft": {
       "ms_spell_check": {
         "ms_spell_check_language": "es"
+      },
+      "host": {
+        "AzureML": {
+          "notebookHasBeenCompleted": true
+        }
       }
     },
     "nteract": {
       "version": "nteract-front-end@1.0.0"
+    },
+    "kernel_info": {
+      "name": "python38-azureml"
     }
   },
   "nbformat": 4,

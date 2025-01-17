@@ -1,0 +1,100 @@
+{
+  "cells": [
+    {
+      "cell_type": "code",
+      "source": [
+        "import psycopg2\n",
+        "from psycopg2 import Error # Importar la clase Error\n",
+        "from psycopg2 import sql\n",
+        "import pandas as pd"
+      ],
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "ModuleNotFoundError",
+          "evalue": "No module named 'psycopg2'",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mModuleNotFoundError\u001b[0m                       Traceback (most recent call last)",
+            "Cell \u001b[0;32mIn[2], line 1\u001b[0m\n\u001b[0;32m----> 1\u001b[0m \u001b[38;5;28;01mimport\u001b[39;00m \u001b[38;5;21;01mpsycopg2\u001b[39;00m\n\u001b[1;32m      2\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpsycopg2\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m Error \u001b[38;5;66;03m# Importar la clase Error\u001b[39;00m\n\u001b[1;32m      3\u001b[0m \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;21;01mpsycopg2\u001b[39;00m \u001b[38;5;28;01mimport\u001b[39;00m sql\n",
+            "\u001b[0;31mModuleNotFoundError\u001b[0m: No module named 'psycopg2'"
+          ]
+        }
+      ],
+      "execution_count": 2,
+      "metadata": {
+        "gather": {
+          "logged": 1737118352678
+        }
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def create_server_connection():\n",
+        "    conn = None\n",
+        "    try:\n",
+        "        conn = psycopg2.connect(\n",
+        "            database=\"datafundamental\", \n",
+        "            user=\"datafundamental_owner\", \n",
+        "            password=\"uozci0wQGpA6\", \n",
+        "            host=\"ep-solitary-ponda2p3evpo.eu-central-1.aws.neon.tech\", \n",
+        "            sslmode=\"require\", \n",
+        "            port=5432\n",
+        "        )\n",
+        "        print(\"Database connection successful\")\n",
+        "    except psycopg2.OperationalError as err:\n",
+        "        print(\"Failed to connect to the database. Please check the following:\")\n",
+        "        print(\"- Are the username and password correct?\")\n",
+        "        print(\"- Is the host address accurate?\")\n",
+        "        print(\"- Is the database accessible with these credentials?\")\n",
+        "        print(\"- Additional Error Details:\", err)\n",
+        "    return conn\n"
+      ],
+      "outputs": [],
+      "execution_count": 1,
+      "metadata": {
+        "gather": {
+          "logged": 1737118297366
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python38-azureml",
+      "language": "python",
+      "display_name": "Python 3.8 - AzureML"
+    },
+    "language_info": {
+      "name": "python",
+      "version": "3.10.11",
+      "mimetype": "text/x-python",
+      "codemirror_mode": {
+        "name": "ipython",
+        "version": 3
+      },
+      "pygments_lexer": "ipython3",
+      "nbconvert_exporter": "python",
+      "file_extension": ".py"
+    },
+    "microsoft": {
+      "ms_spell_check": {
+        "ms_spell_check_language": "es"
+      },
+      "host": {
+        "AzureML": {
+          "notebookHasBeenCompleted": true
+        }
+      }
+    },
+    "kernel_info": {
+      "name": "python38-azureml"
+    },
+    "nteract": {
+      "version": "nteract-front-end@1.0.0"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 2
+}
