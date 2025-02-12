@@ -3280,42 +3280,47 @@
         "# Instalar sqlalchemy para la conexión con PostgreSQL\n",
         "# !pip install sqlalchemy\n",
         "\n",
+        "import pandas as pd\n",
         "from sqlalchemy import create_engine\n",
         "\n",
-        "# Datos de conexión a PostgreSQL\n",
-        "db_url = \"postgresql://datafundamental_owner:uozci0wQGpA6@ep-shy-forest-a2w2nrq6-pooler.eu-central-1.aws.neon.tech/datafundamental?sslmode=require\"\n",
+        "# 🔹 Datos de conexión a PostgreSQL\n",
+        "DB_URL = \"postgresql://datafundamental_owner:uozci0wQGpA6@ep-shy-forest-a2w2nrq6-pooler.eu-central-1.aws.neon.tech/data_powergen?sslmode=require\"\n",
         "\n",
-        "# Crear conexión con la base de datos\n",
-        "engine = create_engine(db_url)\n",
+        "# 🔹 Crear la conexión con la base de datos\n",
+        "engine = create_engine(DB_URL)\n",
         "\n",
-        "# Nombre de la tabla en PostgreSQL\n",
-        "nombre_tabla = \"datos_combinados\"\n",
+        "# 🔹 Cargar los archivos CSV\n",
+        "archivo_datos_corregidos = \"/mnt/batch/tasks/shared/LS_root/mounts/clusters/aurelio-parra/code/Users/aurelio.sosa.netmind/powergen-predictivo/modulo_2/CSV/Datos_Corregidos.csv\"  # Ruta donde guardaste el archivo\n",
+        "archivo_datos_combinados = \"/mnt/batch/tasks/shared/LS_root/mounts/clusters/aurelio-parra/code/Users/aurelio.sosa.netmind/powergen-predictivo/modulo_2/CSV/Datos_Combinados.csv\"  # Ruta donde guardaste el archivo\n",
         "\n",
-        "# Cargar el dataset en PostgreSQL\n",
-        "datos_combinados.to_sql(nombre_tabla, engine, if_exists=\"replace\", index=False)\n",
+        "# 🔹 Cargar los datasets en Pandas\n",
+        "datos_corregidos = pd.read_csv(archivo_datos_corregidos)\n",
+        "datos_combinados = pd.read_csv(archivo_datos_combinados)\n",
         "\n",
-        "# Confirmación de éxito\n",
-        "f\"El dataset ha sido cargado exitosamente en la tabla '{nombre_tabla}' de PostgreSQL.\"\n"
+        "# 🔹 Definir los nombres de las tablas en PostgreSQL\n",
+        "tabla_datos_corregidos = \"datos_corregidos\"\n",
+        "tabla_datos_combinados = \"datos_combinados\"\n",
+        "\n",
+        "# 🔹 Cargar los datasets en PostgreSQL\n",
+        "datos_corregidos.to_sql(tabla_datos_corregidos, engine, if_exists=\"replace\", index=False)\n",
+        "datos_combinados.to_sql(tabla_datos_combinados, engine, if_exists=\"replace\", index=False)\n",
+        "\n",
+        "print(f\"✅ Los datasets han sido cargados exitosamente en PostgreSQL:\")\n",
+        "print(f\"   - Tabla '{tabla_datos_corregidos}'\")\n",
+        "print(f\"   - Tabla '{tabla_datos_combinados}'\")\n",
+        "\n"
       ],
       "outputs": [
         {
           "output_type": "stream",
           "name": "stdout",
-          "text": "Collecting sqlalchemy\n  Downloading SQLAlchemy-2.0.38-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.1 MB)\n\u001b[2K     \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m3.1/3.1 MB\u001b[0m \u001b[31m9.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m:00:01\u001b[0m00:01\u001b[0m\n\u001b[?25hRequirement already satisfied: typing-extensions>=4.6.0 in /anaconda/envs/azureml_py38/lib/python3.10/site-packages (from sqlalchemy) (4.12.2)\nRequirement already satisfied: greenlet!=0.4.17 in /anaconda/envs/azureml_py38/lib/python3.10/site-packages (from sqlalchemy) (3.1.1)\nInstalling collected packages: sqlalchemy\nSuccessfully installed sqlalchemy-2.0.38\n"
-        },
-        {
-          "output_type": "execute_result",
-          "execution_count": 30,
-          "data": {
-            "text/plain": "\"El dataset ha sido cargado exitosamente en la tabla 'datos_combinados' de PostgreSQL.\""
-          },
-          "metadata": {}
+          "text": "✅ Los datasets han sido cargados exitosamente en PostgreSQL:\n   - Tabla 'datos_corregidos'\n   - Tabla 'datos_combinados'\n"
         }
       ],
-      "execution_count": 30,
+      "execution_count": 32,
       "metadata": {
         "gather": {
-          "logged": 1739395485997
+          "logged": 1739397230655
         }
       }
     },
